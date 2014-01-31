@@ -26,9 +26,17 @@ augmentWithRatioOfFemalesToMales <- function(input) {
                     log.ratio))
 }
 
+reorderByGenderDisparity <- function(input) {
+  input$exam.names <- reorder(input$exam.names,
+                              input$log.ratio,
+                              mean)
+  return(input)
+}
+
 ap <- loadData("AP-gender.csv")
 ap <- renameVariables(ap)
 ap <- augmentWithRatioOfFemalesToMales(ap)
+ap <- reorderByGenderDisparity(ap)
 
 p <- ggplot(aes(y = factor(exam.names),
                 x = log.ratio),
