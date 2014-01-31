@@ -1,4 +1,5 @@
 # required libraries
+library(ggplot2)
 
 loadData <- function(input) {
   read.csv(input,
@@ -28,4 +29,10 @@ augmentWithRatioOfFemalesToMales <- function(input) {
 ap <- loadData("AP-gender.csv")
 ap <- renameVariables(ap)
 ap <- augmentWithRatioOfFemalesToMales(ap)
-View(ap)
+
+p <- ggplot(aes(y = factor(exam.names),
+                x = log.ratio),
+            data = ap)
+p <- p + geom_point()
+
+print(p)
