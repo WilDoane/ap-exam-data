@@ -45,6 +45,7 @@ p <- ggplot(aes(y = factor(exam.names),
                 size = females + males),
             data = ap)
 p <- p + geom_point()
+p <- p + geom_vline(xintercept=1, colour="orange")
 p <- p + scale_x_continuous(trans=log2_trans(),
                             breaks=2^(-3:3),
                             labels=trans_format("log2", math_format(2^.x)))
