@@ -53,6 +53,7 @@ p <- p + xlab(expression(paste(log[2],
                                       frac(paste("female test takers"), 
                                            paste("male test takers")),
                                       ")"))))
-
+p <- p + ylab("Advanced Placement (AP) Exam")
+p <- p + ggtitle("National Totals for Advanced Placement Exams")
 
 print(p)
