@@ -38,9 +38,11 @@ ap <- loadData("AP-gender.csv")
 ap <- renameVariables(ap)
 ap <- augmentWithRatioOfFemalesToMales(ap)
 ap <- reorderByGenderDisparity(ap)
+ap <- subset(ap, exam.names != "total.exams")
 
 p <- ggplot(aes(y = factor(exam.names),
-                x = ratio.of.females.to.males),
+                x = ratio.of.females.to.males,
+                size = females + males),
             data = ap)
 p <- p + geom_point()
 p <- p + scale_x_continuous(trans=log2_trans(),
