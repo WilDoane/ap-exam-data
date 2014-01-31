@@ -1,5 +1,6 @@
 # required libraries
 library(ggplot2)
+library(scales)
 
 loadData <- function(input) {
   read.csv(input,
@@ -39,8 +40,17 @@ ap <- augmentWithRatioOfFemalesToMales(ap)
 ap <- reorderByGenderDisparity(ap)
 
 p <- ggplot(aes(y = factor(exam.names),
-                x = log.ratio),
+                x = ratio.of.females.to.males),
             data = ap)
 p <- p + geom_point()
+p <- p + scale_x_continuous(trans=log2_trans(),
+                            breaks=2^(-3:3),
+                            labels=trans_format("log2", math_format(2^.x)))
+p <- p + xlab(expression(paste(log[2], 
+                               bgroup("(",
+                                      frac(paste("female test takers"), 
+                                           paste("male test takers")),
+                                      ")"))))
+
 
 print(p)
