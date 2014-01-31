@@ -56,5 +56,6 @@ p <- p + xlab(expression(paste(log[2],
                                       ")"))))
 p <- p + ylab("Advanced Placement (AP) Exam")
 p <- p + ggtitle("National Totals for Advanced Placement Exams")
+p <- p + labs(size = "Total Number\nof Test-Takers")
 
 print(p)
