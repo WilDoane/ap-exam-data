@@ -27,6 +27,17 @@ augmentWithRatioOfFemalesToMales <- function(input) {
                     log.ratio))
 }
 
+augmentWithExamTypes <- function(input) {
+  stem.exams <- c("computer.science.a", "physics.c..elec....magnet.", "physics.c..mechanics", 
+    "physics.b", "calculus.bc", "chemistry", "calculus.ab", "statistics", 
+    "environmental.science", "biology")
+
+  input$exam.type <- "Non-STEM"
+  
+  input[input$exam.names %in% stem.exams, ]$exam.type <- "STEM"
+  input
+}
+
 reorderByGenderDisparity <- function(input) {
   input$exam.names <- reorder(input$exam.names,
                               input$log.ratio,
@@ -37,12 +48,14 @@ reorderByGenderDisparity <- function(input) {
 ap <- loadData("AP-gender.csv")
 ap <- renameVariables(ap)
 ap <- augmentWithRatioOfFemalesToMales(ap)
+ap <- augmentWithExamTypes(ap)
 ap <- reorderByGenderDisparity(ap)
 ap <- subset(ap, exam.names != "total.exams")
 
 p <- ggplot(aes(y = factor(exam.names),
                 x = ratio.of.females.to.males,
-                size = females + males),
+                size = females + males,
+                color = exam.type),
             data = ap)
 p <- p + geom_point()
 p <- p + geom_vline(xintercept=1, colour="orange")
