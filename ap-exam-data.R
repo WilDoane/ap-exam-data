@@ -34,10 +34,12 @@ reorderByGenderDisparity <- function(input) {
   return(input)
 }
 
-get_x_axis_limits <- function(input) {
-  # get the difference between a given ratio and 1
-  # find the max of the absolute value of that difference
-  # the limits are 1 - that value, 1 + that value
+get_x_axis_limits <- function(log.ratios) {
+  distances = abs(1 - log.ratios)
+  max.distance = max(distances)
+  limits = c(2^(-max.distance), 
+             2^(max.distance))
+  return(limits)
 }
 
 ap <- loadData("AP-gender.csv")
@@ -54,7 +56,8 @@ p <- p + geom_point()
 p <- p + geom_vline(xintercept=1, colour="orange")
 p <- p + scale_x_continuous(trans=log2_trans(),
                             breaks=2^(-3:3),
-                            # limits = get_x_axis_limits()
+                            limits=get_x_axis_limits(ap$log.ratio),
+                            expand=c(-0.1, 0.0),
                             labels=trans_format("log2", math_format(2^.x)))
                             
 p <- p + xlab(expression(paste(bgroup("(",
