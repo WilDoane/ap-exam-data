@@ -49,8 +49,8 @@ p <- p + geom_vline(xintercept=1, colour="orange")
 p <- p + scale_x_continuous(trans=log2_trans(),
                             breaks=2^(-3:3),
                             labels=trans_format("log2", math_format(2^.x)))
-p <- p + xlab(expression(paste(log[2], 
-                               bgroup("(",
+                            
+p <- p + xlab(expression(paste(bgroup("(",
                                       frac(paste("female test takers"), 
                                            paste("male test takers")),
                                       ")"))))
