@@ -4,25 +4,27 @@ library(scales)
 
 loadData <- function(input) {
   read.csv(input,
-           header = TRUE,
+           header = FALSE,
            stringsAsFactors = FALSE)
 }
 
-renameVariables <- function(input) {
-  names(input)[1] <- "sex"
-  names(input) <- tolower(names(input))
-  return(input)
+cleanData <- function(input) {
+  input <- input[ , -c(1, 2)] # drop aggregate info from Excel spreadsheet
+  column.names <- input[1, ]
+  females <- input[2, ]
+  males <- input[3, ]
+  output <- rbind(males, females)
+  output <- as.data.frame(output)
+  colnames(output) <- column.names
+  return(output)
 }
 
 augmentWithRatioOfFemalesToMales <- function(input) {
-  exam.names <- names(input)[-1]
-  output <- t(input[ ,-1])
-  output <- data.frame(females = as.numeric(output[, 1]),
-                       males   = as.numeric(output[, 2]))
-  ratio.of.females.to.males <- output$females / output$males
+  ratio.of.females.to.males <- input$females / input$males
   log.ratio <- log(ratio.of.females.to.males, base = 2)
-  return(data.frame(exam.names,
-                    output, 
+  return(data.frame(exam.names = input$exam.names,
+                    females = as.numeric(input$females),
+                    males = as.numeric(input$males),
                     ratio.of.females.to.males, 
                     log.ratio))
 }
@@ -43,10 +45,11 @@ get_x_axis_limits <- function(log.ratios) {
 }
 
 ap <- loadData("AP-gender.csv")
-ap <- renameVariables(ap)
+ap <- cleanData(ap)
 ap <- augmentWithRatioOfFemalesToMales(ap)
 ap <- reorderByGenderDisparity(ap)
 ap <- subset(ap, exam.names != "total.exams")
+View(ap)
 
 p <- ggplot(aes(y = factor(exam.names),
                 x = ratio.of.females.to.males,
