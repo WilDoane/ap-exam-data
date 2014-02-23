@@ -55,10 +55,10 @@ p <- ggplot(aes(y = factor(exam.names),
 p <- p + geom_point()
 p <- p + geom_vline(xintercept=1, colour="orange")
 p <- p + scale_x_continuous(trans=log2_trans(),
-                            breaks=2^(-3:3),
+                            breaks=2^(-2:2),
                             limits=get_x_axis_limits(ap$log.ratio),
                             expand=c(-0.1, 0.0),
-                            labels=trans_format("log2", math_format(2^.x)))
+                            labels=c("1/4", "1/2", 1, 2, 4))
                             
 p <- p + xlab(expression(paste(bgroup("(",
                                       frac(paste("female test takers"), 
