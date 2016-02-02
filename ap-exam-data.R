@@ -4,25 +4,27 @@ library(scales)
 
 loadData <- function(input) {
   read.csv(input,
-           header = TRUE,
+           header = FALSE,
            stringsAsFactors = FALSE)
 }
 
-renameVariables <- function(input) {
-  names(input)[1] <- "sex"
-  names(input) <- tolower(names(input))
-  return(input)
+cleanData <- function(input) {
+  input <- input[ , -c(1, 2)] # drop aggregate info from Excel spreadsheet
+  column.names <- input[1, ]
+  females <- input[2, ]
+  males <- input[3, ]
+  output <- rbind(males, females)
+  output <- as.data.frame(output)
+  colnames(output) <- column.names
+  return(output)
 }
 
 augmentWithRatioOfFemalesToMales <- function(input) {
-  exam.names <- names(input)[-1]
-  output <- t(input[ ,-1])
-  output <- data.frame(females = as.numeric(output[, 1]),
-                       males   = as.numeric(output[, 2]))
-  ratio.of.females.to.males <- output$females / output$males
+  ratio.of.females.to.males <- input$females / input$males
   log.ratio <- log(ratio.of.females.to.males, base = 2)
-  return(data.frame(exam.names,
-                    output, 
+  return(data.frame(exam.names = input$exam.names,
+                    females = as.numeric(input$females),
+                    males = as.numeric(input$males),
                     ratio.of.females.to.males, 
                     log.ratio))
 }
@@ -45,12 +47,21 @@ reorderByGenderDisparity <- function(input) {
   return(input)
 }
 
+get_x_axis_limits <- function(log.ratios) {
+  distances = abs(1 - log.ratios)
+  max.distance = max(distances)
+  limits = c(2^(-max.distance), 
+             2^(max.distance))
+  return(limits)
+}
+
 ap <- loadData("AP-gender.csv")
-ap <- renameVariables(ap)
+ap <- cleanData(ap)
 ap <- augmentWithRatioOfFemalesToMales(ap)
 ap <- augmentWithExamTypes(ap)
 ap <- reorderByGenderDisparity(ap)
 ap <- subset(ap, exam.names != "total.exams")
+View(ap)
 
 p <- ggplot(aes(y = factor(exam.names),
                 x = ratio.of.females.to.males,
@@ -60,10 +71,12 @@ p <- ggplot(aes(y = factor(exam.names),
 p <- p + geom_point()
 p <- p + geom_vline(xintercept=1, colour="orange")
 p <- p + scale_x_continuous(trans=log2_trans(),
-                            breaks=2^(-3:3),
-                            labels=trans_format("log2", math_format(2^.x)))
-p <- p + xlab(expression(paste(log[2], 
-                               bgroup("(",
+                            breaks=2^(-2:2),
+                            limits=get_x_axis_limits(ap$log.ratio),
+                            expand=c(-0.1, 0.0),
+                            labels=c("1/4", "1/2", 1, 2, 4))
+                            
+p <- p + xlab(expression(paste(bgroup("(",
                                       frac(paste("female test takers"), 
                                            paste("male test takers")),
                                       ")"))))
