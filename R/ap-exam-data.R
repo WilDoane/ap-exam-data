@@ -25,17 +25,17 @@ augmentWithRatioOfFemalesToMales <- function(input) {
   return(data.frame(exam.names = input$exam.names,
                     females = as.numeric(input$females),
                     males = as.numeric(input$males),
-                    ratio.of.females.to.males, 
+                    ratio.of.females.to.males,
                     log.ratio))
 }
 
 augmentWithExamTypes <- function(input) {
-  stem.exams <- c("computer.science.a", "physics.c..elec....magnet.", "physics.c..mechanics", 
-    "physics.b", "calculus.bc", "chemistry", "calculus.ab", "statistics", 
+  stem.exams <- c("computer.science.a", "physics.c..elec....magnet.", "physics.c..mechanics",
+    "physics.b", "calculus.bc", "chemistry", "calculus.ab", "statistics",
     "environmental.science", "biology")
 
   input$exam.type <- "Non-STEM"
-  
+
   input[input$exam.names %in% stem.exams, ]$exam.type <- "STEM"
   input
 }
@@ -50,12 +50,12 @@ reorderByGenderDisparity <- function(input) {
 get_x_axis_limits <- function(log.ratios) {
   distances = abs(1 - log.ratios)
   max.distance = max(distances)
-  limits = c(2^(-max.distance), 
+  limits = c(2^(-max.distance),
              2^(max.distance))
   return(limits)
 }
 
-ap <- loadData("AP-gender.csv")
+ap <- loadData(file.path("data_raw", "AP-gender.csv"))
 ap <- cleanData(ap)
 ap <- augmentWithRatioOfFemalesToMales(ap)
 ap <- augmentWithExamTypes(ap)
@@ -75,9 +75,9 @@ p <- p + scale_x_continuous(trans=log2_trans(),
                             limits=get_x_axis_limits(ap$log.ratio),
                             expand=c(-0.1, 0.0),
                             labels=c("1/4", "1/2", 1, 2, 4))
-                            
+
 p <- p + xlab(expression(paste(bgroup("(",
-                                      frac(paste("female test takers"), 
+                                      frac(paste("female test takers"),
                                            paste("male test takers")),
                                       ")"))))
 p <- p + ylab("Advanced Placement (AP) Exam")

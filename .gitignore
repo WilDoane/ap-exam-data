@@ -7,3 +7,4 @@
 # iPython Notebook backup files
 *-checkpoint.ipynb
 
+.Rproj.user
